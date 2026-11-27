@@ -14,7 +14,7 @@
  */
 
 window.__ModuleLoader__.load({
-  id: 'search-bird',
+  id: 'dsh-search-bird',
   factory: (require) => {
     const React = require('react')
     const h = React.createElement

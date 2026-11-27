@@ -1,5 +1,5 @@
 {
-  "name": "search-bird",
+  "name": "dsh-search-bird",
   "version": "0.1.0",
   "private": true,
   "description": "搜索小鸟 (Search Bird): lightweight web-search provider for dsh — mainland-direct engines, a configurable Clash proxy, and gh:/crate:/npm:/pypi:/so: developer-source prefixes",

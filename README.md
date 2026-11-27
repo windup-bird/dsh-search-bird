@@ -68,7 +68,7 @@ Web 界面 → 设置 → 插件 → **轻量搜索**：
 ## 安装
 
 ```
-plugin_manager install_bundle  →  /home/windupbird/Workspace/search-bird
+plugin_manager install_bundle  →  /home/windupbird/Workspace/dsh-search-bird
 ```
 
 bundle 的 patch 会插入插件行，并把 `web` 行的 `searchProvider` 指向 `search-bird`（同时保留 `fetchProvider: http`）。

@@ -1,0 +1,26 @@
+# Dependencies — only appear if this package is installed with file:/npm
+# instead of being linked into the profile.
+node_modules/
+
+# Package manager logs and pack artifacts
+*.log
+pnpm-debug.log*
+npm-debug.log*
+yarn-error.log*
+*.tgz
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# OS and editor metadata
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Test and coverage output
+coverage/
+*.lcov
