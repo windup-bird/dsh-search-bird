@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Lightweight search",
+    "description": "Web search that prefers direct mainland engines and routes the rest through a configurable Clash proxy."
+  }
+}

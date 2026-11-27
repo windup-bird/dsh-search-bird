@@ -1,0 +1,15 @@
+# search-bird bundle patch.
+#
+# 1. Insert the plugin row. Its id is also the settings namespace the Web card
+#    edits, so keep the two in sync.
+# 2. Point the web capability seam at this provider. Overriding a row replaces
+#    its complete config, so both fields are restated explicitly.
+- insert:
+    - id: search-bird
+      name: search-bird
+
+- id: web
+  name: '@deepseek-ai/dsh-web'
+  config:
+    searchProvider: search-bird
+    fetchProvider: http
