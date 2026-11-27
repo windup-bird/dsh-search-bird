@@ -2,7 +2,7 @@
   "name": "search-bird",
   "version": "0.1.0",
   "private": true,
-  "description": "Lightweight web-search provider for dsh: mainland-direct engines first, configurable Clash proxy for the rest, configured from the Web UI",
+  "description": "搜索小鸟 (Search Bird): lightweight web-search provider for dsh — mainland-direct engines, a configurable Clash proxy, and gh:/crate:/npm:/pypi:/so: developer-source prefixes",
   "type": "module",
   "main": "./index.js",
   "exports": {

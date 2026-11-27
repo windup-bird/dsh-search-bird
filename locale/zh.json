@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "轻量搜索",
-    "description": "大陆引擎优先直连、海外引擎走可配置 Clash 代理的网页搜索来源。"
+    "title": "搜索小鸟",
+    "description": "大陆引擎优先直连、海外引擎走可配置 Clash 代理；支持 gh:/crate:/npm:/pypi:/so: 等编程源前缀。"
   }
 }

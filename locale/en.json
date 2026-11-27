@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Lightweight search",
-    "description": "Web search that prefers direct mainland engines and routes the rest through a configurable Clash proxy."
+    "title": "Search Bird",
+    "description": "Mainland engines go direct and the rest use a configurable Clash proxy; adds gh:, crate:, npm:, pypi:, so: and paper: source prefixes."
   }
 }

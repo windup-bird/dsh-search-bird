@@ -1,4 +1,4 @@
-# search-bird
+# dsh-search-bird（搜索小鸟）
 
 给 DSH 用的轻量网页搜索来源（provider）：**大陆引擎优先直连，海外引擎走可配置的 Clash 代理**，配置在 Web 界面里完成。
 
@@ -80,7 +80,6 @@ node test/transport.mjs   # 直连 / CONNECT 隧道 / 重定向 / 解压 / 超�
 node test/engines.mjs     # 大陆引擎实抓解析 + DDG/Google 结构样本
 node test/search.mjs      # 路由策略、融合去重、代理不可用时的降级
 node test/verticals.mjs   # 编程源前缀路由 + 每个源的真实请求
-node test/card.mjs        # 配置卡渲染（无浏览器）
 ```
 
 ## 已知限制

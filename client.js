@@ -4,8 +4,13 @@
  * It reads and writes the Host plugin entry's Config through the settings
  * domain's own form controller (`configForms`), so values persist exactly like
  * a hand-edited profile patch, and the volatile fields apply without a plugin
- * restart. Engine switches write immediately; the proxy address is a text field
- * committed with its own button.
+ * restart.
+ *
+ * The card ships its own stylesheet instead of importing the UI primitives:
+ * the declarations below are copied from the host's switch, text field, select,
+ * field row and button modules, with only `--dsw-*` token references kept, so
+ * the card follows the theme (including light/dark) without depending on a
+ * private module table. Classes are prefixed `sb-` so they cannot collide.
  */
 
 window.__ModuleLoader__.load({
@@ -63,12 +68,16 @@ window.__ModuleLoader__.load({
     }
 
     const zh = {
-      title: '轻量搜索',
-      description: '大陆引擎优先直连，海外引擎走可配置的 Clash 代理。',
-      providerActive: '已成为 web_search 的搜索来源',
+      title: '搜索小鸟',
+      description: '大陆引擎优先直连，海外引擎走可配置的 Clash 代理；编程源用前缀，例如 crate: serde。',
+      providerActive: '已是 web_search 的搜索来源',
       providerInactive: '当前搜索来源不是本插件',
       providerUnknown: '无法读取当前搜索来源',
+      enginesTitle: '网页引擎',
+      verticalsTitle: '编程源',
+      verticalsHint: '在搜索词前加前缀就只查这个源，例如 crate: serde。不带前缀时走普通网页搜索。',
       proxyTitle: '代理',
+      proxyLabel: '代理地址',
       proxyHint: '大陆引擎始终直连；海外引擎在「自动」下优先走代理，代理不可达时自动跳过。',
       proxyPlaceholder: 'http://127.0.0.1:7897',
       apply: '应用',
@@ -77,32 +86,32 @@ window.__ModuleLoader__.load({
       modeAuto: '自动',
       modeAlways: '始终走代理',
       modeNever: '从不走代理',
-      enginesTitle: '引擎',
       regionCn: '大陆直连',
       regionGlobal: '需代理',
       engineNever: '尚未运行',
       engineFailed: '失败',
-      engineOk: '正常',
-      verticalsTitle: '编程源',
-      verticalsHint: '在搜索词前加前缀就只查这个源，例如 crate: serde。不带前缀时走普通网页搜索。',
-      limitsTitle: '结果',
       resultsLabel: '每次返回条数',
+      resultsTitle: '结果',
       instantHint: '改动立即生效，无需重启。',
       unreachable: '不可达',
       reachable: '可达',
       probing: '检测中…',
       unavailable: '状态接口不可用',
-      readFailed: '读取失败',
       credentialHint: '若状态一直不可用，代理是否需要先启动？',
+      openPage: '插件页面',
     }
 
     const en = {
-      title: 'Lightweight search',
-      description: 'Mainland engines go direct; the rest use a configurable Clash proxy.',
+      title: 'Search Bird',
+      description: 'Mainland engines go direct, the rest use a Clash proxy; prefix a query for developer sources, e.g. crate: serde.',
       providerActive: 'Serving web_search',
       providerInactive: 'Another provider serves web_search',
       providerUnknown: 'Cannot read the active provider',
+      enginesTitle: 'Web engines',
+      verticalsTitle: 'Developer sources',
+      verticalsHint: 'Prefix a query to search one source only, e.g. crate: serde. Plain queries stay on the open web.',
       proxyTitle: 'Proxy',
+      proxyLabel: 'Proxy address',
       proxyHint:
         'Mainland engines always go direct. Global engines prefer the proxy in auto mode and fall back when it is unreachable.',
       proxyPlaceholder: 'http://127.0.0.1:7897',
@@ -112,110 +121,62 @@ window.__ModuleLoader__.load({
       modeAuto: 'Auto',
       modeAlways: 'Always proxy',
       modeNever: 'Never proxy',
-      enginesTitle: 'Engines',
       regionCn: 'Mainland',
       regionGlobal: 'Needs proxy',
       engineNever: 'Not run yet',
       engineFailed: 'Failed',
-      engineOk: 'OK',
-      verticalsTitle: 'Developer sources',
-      verticalsHint: 'Prefix a query to search one source only, e.g. crate: serde. Plain queries stay on the open web.',
-      limitsTitle: 'Results',
       resultsLabel: 'Results per search',
+      resultsTitle: 'Results',
       instantHint: 'Changes apply immediately, no restart.',
       unreachable: 'Unreachable',
       reachable: 'Reachable',
       probing: 'Checking…',
       unavailable: 'Status endpoint unavailable',
-      readFailed: 'Read failed',
       credentialHint: 'If this stays unavailable, is the proxy running?',
+      openPage: 'plugin page',
     }
 
-    const styles = {
-      root: { display: 'grid', gap: '16px', fontSize: '13px', lineHeight: 1.5, color: 'inherit' },
-      section: { display: 'grid', gap: '8px' },
-      heading: {
-        fontSize: '11px',
-        fontWeight: 600,
-        letterSpacing: '0.06em',
-        textTransform: 'uppercase',
-        color: 'var(--dsw-alias-label-secondary)',
-      },
-      row: { display: 'flex', alignItems: 'center', gap: '10px' },
-      spread: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' },
-      name: { fontWeight: 550 },
-      meta: { fontSize: '11.5px', color: 'var(--dsw-alias-label-secondary)' },
-      badge: {
-        borderRadius: '999px',
-        padding: '1px 7px',
-        fontSize: '11px',
-        border: '1px solid var(--dsw-alias-border-l1)',
-        color: 'var(--dsw-alias-label-secondary)',
-        whiteSpace: 'nowrap',
-      },
-      input: {
-        boxSizing: 'border-box',
-        flex: '1 1 220px',
-        minWidth: '160px',
-        border: '1px solid var(--dsw-alias-border-l1)',
-        borderRadius: '8px',
-        background: 'transparent',
-        color: 'inherit',
-        padding: '6px 10px',
-        font: 'inherit',
-        fontSize: '12.5px',
-      },
-      button: {
-        appearance: 'none',
-        border: '1px solid var(--dsw-alias-border-l1)',
-        borderRadius: '8px',
-        background: 'transparent',
-        color: 'inherit',
-        padding: '5px 11px',
-        font: 'inherit',
-        fontSize: '12px',
-        cursor: 'pointer',
-      },
-      select: {
-        boxSizing: 'border-box',
-        border: '1px solid var(--dsw-alias-border-l1)',
-        borderRadius: '8px',
-        background: 'var(--dsw-alias-bg-layer-1)',
-        color: 'inherit',
-        padding: '5px 8px',
-        font: 'inherit',
-        fontSize: '12.5px',
-      },
-      track: (checked, disabled) => ({
-        appearance: 'none',
-        position: 'relative',
-        flex: '0 0 auto',
-        width: '34px',
-        height: '20px',
-        borderRadius: '999px',
-        border: 'none',
-        padding: 0,
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.5 : 1,
-        background: checked ? 'var(--dsw-alias-brand-primary)' : 'var(--dsw-alias-border-l2)',
-        transition: 'background 120ms ease',
-      }),
-      knob: (checked) => ({
-        position: 'absolute',
-        top: '2px',
-        left: '2px',
-        width: '16px',
-        height: '16px',
-        borderRadius: '999px',
-        background: 'var(--dsw-alias-bg-base)',
-        transform: checked ? 'translateX(14px)' : 'none',
-        transition: 'transform 120ms ease',
-      }),
-      hint: { fontSize: '11.5px', color: 'var(--dsw-alias-label-secondary)' },
-      ok: { color: 'var(--dsw-alias-state-success-primary)' },
-      warn: { color: 'var(--dsw-alias-state-warn-primary)' },
-      bad: { color: 'var(--dsw-alias-state-error-primary)' },
-    }
+    /** Declarations copied from the host's switch, field, input and button modules. */
+    const CSS = `
+.sb-root{display:flex;flex-direction:column;gap:14px;font-size:13px;line-height:1.5;color:var(--dsw-alias-label-primary);min-width:0}
+.sb-status{display:flex;align-items:center;gap:8px;font-size:12px;line-height:1.5;color:var(--dsw-alias-label-tertiary)}
+.sb-dot{flex:none;width:6px;height:6px;border-radius:50%;background:var(--dsw-alias-state-idle-primary)}
+.sb-dot[data-on=true]{background:var(--dsw-alias-state-success-primary)}
+.sb-dot[data-on=false]{background:var(--dsw-alias-state-warn-primary)}
+.sb-section{display:flex;flex-direction:column;min-width:0}
+.sb-title{margin:0 0 2px;font-size:12px;font-weight:600;line-height:1.5;color:var(--dsw-alias-label-secondary)}
+.sb-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:12px 0}
+.sb-row+.sb-row,.sb-row+.sb-field,.sb-field+.sb-row,.sb-field+.sb-field{border-top:.5px solid var(--dsw-alias-border-l2)}
+.sb-rowMain{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sb-line{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.sb-name{font-size:13px;font-weight:500;line-height:1.5;color:var(--dsw-alias-label-primary)}
+.sb-badge{flex:none;padding:0 6px;border-radius:999px;background:var(--dsw-alias-bg-layer-3);color:var(--dsw-alias-label-secondary);font-size:11px;line-height:16px;white-space:nowrap}
+.sb-meta{font-size:12px;line-height:1.5;color:var(--dsw-alias-label-tertiary);min-width:0}
+.sb-field{display:flex;flex-direction:column;gap:6px;padding:12px 0}
+.sb-label{font-size:13px;font-weight:500;line-height:1.5;color:var(--dsw-alias-label-primary)}
+.sb-inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sb-hint{margin:0;font-size:12px;line-height:1.5;color:var(--dsw-alias-label-tertiary)}
+.sb-ok{color:var(--dsw-alias-state-success-primary)}
+.sb-bad{color:var(--dsw-alias-state-error-primary)}
+.sb-input{box-sizing:border-box;flex:1 1 200px;min-width:0;height:34px;padding:0 12px;border:.5px solid var(--dsw-alias-border-l4);border-radius:var(--dsw-radius-md);background:var(--dsw-alias-bg-layer-3);font:inherit;font-size:13px;line-height:1.5;color:var(--dsw-alias-label-primary)}
+.sb-input::placeholder{color:var(--dsw-alias-label-dimmed)}
+.sb-input:focus-visible{outline:none;border-color:var(--dsw-alias-state-business-primary)}
+.sb-input:disabled{color:var(--dsw-alias-label-tertiary);cursor:default}
+.sb-select{box-sizing:border-box;height:34px;padding:0 8px;border:.5px solid var(--dsw-alias-border-l4);border-radius:var(--dsw-radius-md);background:var(--dsw-alias-bg-layer-3);color:var(--dsw-alias-label-primary);font:inherit;font-size:13px;line-height:1.5}
+.sb-select:focus-visible{outline:none;border-color:var(--dsw-alias-state-business-primary)}
+.sb-button{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:28px;padding:0 10px;border:.5px solid transparent;border-radius:var(--dsw-radius-sm);background:transparent;box-shadow:inset 0 0 0 var(--dsh-hairline-width,.5px) var(--dsh-button-outline-color,var(--dsw-alias-border-l3));color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;line-height:18px;cursor:pointer}
+.sb-button:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}
+.sb-button:active:not(:disabled){background:var(--dsw-alias-interactive-bg-active)}
+.sb-button:disabled{cursor:not-allowed;opacity:.4}
+.sb-button:focus-visible{outline:var(--dsw-focus-ring-width) solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary));outline-offset:2px}
+.sb-switch{box-sizing:border-box;position:relative;flex:none;width:36px;height:20px;padding:2px;border:0;border-radius:999px;background:var(--dsw-alias-border-l3);cursor:pointer}
+.sb-switch[aria-checked=true]{background:var(--dsw-alias-brand-primary)}
+.sb-switch:disabled{cursor:default;opacity:.5}
+.sb-switch:focus-visible{outline:var(--dsw-focus-ring-width) solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary));outline-offset:2px}
+.sb-thumb{display:block;width:16px;height:16px;border-radius:50%;background:var(--dsw-alias-label-primary-foreground);transition:transform .12s ease}
+.sb-switch[aria-checked=false] .sb-thumb{background:var(--dsw-alias-switch-thumb)}
+.sb-switch[aria-checked=true] .sb-thumb{transform:translate(16px)}
+`
 
     function Toggle(props) {
       return h(
@@ -223,20 +184,20 @@ window.__ModuleLoader__.load({
         {
           type: 'button',
           role: 'switch',
+          className: 'sb-switch',
           'aria-checked': props.checked,
           'aria-label': props.label,
           disabled: props.disabled,
           onClick: () => props.onChange(!props.checked),
-          style: styles.track(props.checked, props.disabled),
         },
-        h('span', { style: styles.knob(props.checked) }),
+        h('span', { className: 'sb-thumb' }),
       )
     }
 
     function statusText(t, last) {
       if (last === null || last === undefined) return t('engineNever')
       if (last.ok === true) return `${last.ms}ms · ${last.count}`
-      return `${t('engineFailed')}：${String(last.error ?? '').slice(0, 48)}`
+      return `${t('engineFailed')}：${String(last.error ?? '').slice(0, 40)}`
     }
 
     function SearchCard(props) {
@@ -248,6 +209,7 @@ window.__ModuleLoader__.load({
       const api = props.searchBird
       const ownState = React.useSyncExternalStore(api.subscribe, api.snapshot, api.snapshot)
       const state = provided !== null ? provided.state : ownState
+
       const [draft, setDraft] = React.useState(null)
       const [justSaved, setJustSaved] = React.useState(false)
       const [status, setStatus] = React.useState(null)
@@ -280,7 +242,7 @@ window.__ModuleLoader__.load({
 
       if (props.view === 'summary') return t('description')
       if (value === undefined || value === null) {
-        return h('div', { style: styles.hint }, statusError === null ? t('probing') : t('unavailable'))
+        return h('div', { className: 'sb-root' }, h('style', { key: 'sb-css' }, CSS), h('p', { className: 'sb-hint' }, t('probing')))
       }
 
       const engines = plain(value.engines, {}) ?? {}
@@ -295,7 +257,8 @@ window.__ModuleLoader__.load({
       const proxyMode = String(plain(value.proxyMode, 'auto'))
       const maxResults = String(plain(value.maxResults, 8))
       const health = status !== null && status.proxy !== null ? status.proxy : null
-      const active = status !== null && status.provider === 'search-bird' && status.selectedProvider === 'search-bird'
+      const active =
+        status !== null && status.provider === 'search-bird' && status.selectedProvider === 'search-bird'
 
       // Call through the owner so a method-shaped `mutate` keeps its receiver.
       const mutate =
@@ -313,40 +276,71 @@ window.__ModuleLoader__.load({
         }
       }
 
+      const commitProxy = () => {
+        write(['proxyUrl'], proxyUrl).then(() => setDraft(null))
+      }
+
+      const healthLabel =
+        health === null
+          ? null
+          : health.error !== null && health.error !== undefined
+            ? health.error
+            : health.health === null || health.health === undefined
+              ? null
+              : health.health.ok
+                ? `${t('reachable')} ${health.health.ms}ms`
+                : t('unreachable')
+
       return h(
         'div',
-        { style: styles.root },
+        { className: 'sb-root' },
+        h('style', { key: 'sb-css' }, CSS),
 
         // Provider status line.
         h(
           'div',
-          { style: styles.row },
-          h('span', { style: active ? styles.ok : styles.warn }, active ? '●' : '○'),
+          { className: 'sb-status' },
+          h('span', {
+            className: 'sb-dot',
+            'data-on': status === null ? 'idle' : active ? 'true' : 'false',
+          }),
           h(
             'span',
-            { style: styles.hint },
-            status === null ? t('providerUnknown') : active ? t('providerActive') : t('providerInactive'),
+            { className: active ? 'sb-ok' : undefined },
+            status === null
+              ? t('providerUnknown')
+              : active
+                ? t('providerActive')
+                : t('providerInactive'),
           ),
         ),
 
-        // Engines.
+        // Web engines.
         h(
-          'div',
-          { style: styles.section },
-          h('div', { style: styles.heading }, t('enginesTitle')),
+          'section',
+          { className: 'sb-section' },
+          h('h3', { className: 'sb-title' }, t('enginesTitle')),
           ...ENGINES.map((engine) => {
             const entry =
               status === null ? null : (status.engines ?? []).find((item) => item.id === engine.id)
             const last = entry === null || entry === undefined ? null : entry.last
             return h(
               'div',
-              { key: engine.id, style: styles.spread },
+              { key: engine.id, className: 'sb-row' },
               h(
                 'div',
-                { style: styles.row },
-                h('span', { style: styles.name }, engine.label),
-                h('span', { style: styles.badge }, engine.region === 'cn' ? t('regionCn') : t('regionGlobal')),
-                h('span', { style: styles.meta }, statusText(t, last)),
+                { className: 'sb-rowMain' },
+                h(
+                  'div',
+                  { className: 'sb-line' },
+                  h('span', { className: 'sb-name' }, engine.label),
+                  h(
+                    'span',
+                    { className: 'sb-badge' },
+                    engine.region === 'cn' ? t('regionCn') : t('regionGlobal'),
+                  ),
+                ),
+                h('span', { className: 'sb-meta' }, statusText(t, last)),
               ),
               h(Toggle, {
                 checked: enabledOf(engine.id),
@@ -366,9 +360,9 @@ window.__ModuleLoader__.load({
 
         // Developer sources reached through a query prefix.
         h(
-          'div',
-          { style: styles.section },
-          h('div', { style: styles.heading }, t('verticalsTitle')),
+          'section',
+          { className: 'sb-section' },
+          h('h3', { className: 'sb-title' }, t('verticalsTitle')),
           ...VERTICALS.map((vertical) => {
             const entry =
               status === null
@@ -377,13 +371,17 @@ window.__ModuleLoader__.load({
             const last = entry === null || entry === undefined ? null : entry.last
             return h(
               'div',
-              { key: vertical.id, style: styles.spread },
+              { key: vertical.id, className: 'sb-row' },
               h(
                 'div',
-                { style: styles.row },
-                h('span', { style: styles.name }, vertical.label),
-                h('span', { style: styles.badge }, `${vertical.prefix}:`),
-                h('span', { style: styles.meta }, statusText(t, last)),
+                { className: 'sb-rowMain' },
+                h(
+                  'div',
+                  { className: 'sb-line' },
+                  h('span', { className: 'sb-name' }, vertical.label),
+                  h('span', { className: 'sb-badge' }, `${vertical.prefix}:`),
+                ),
+                h('span', { className: 'sb-meta' }, statusText(t, last)),
               ),
               h(Toggle, {
                 checked: verticalEnabled(vertical.id),
@@ -402,115 +400,125 @@ window.__ModuleLoader__.load({
               }),
             )
           }),
-          h('div', { style: styles.hint }, t('verticalsHint')),
+          h('p', { className: 'sb-hint' }, t('verticalsHint')),
         ),
 
         // Proxy.
         h(
-          'div',
-          { style: styles.section },
-          h('div', { style: styles.heading }, t('proxyTitle')),
+          'section',
+          { className: 'sb-section' },
+          h('h3', { className: 'sb-title' }, t('proxyTitle')),
           h(
             'div',
-            { style: styles.row },
-            h('input', {
-              type: 'text',
-              value: proxyUrl,
-              placeholder: t('proxyPlaceholder'),
-              spellCheck: false,
-              disabled: !writable || busy,
-              onChange: (event) => setDraft(event.target.value),
-              onKeyDown: (event) => {
-                if (event.key !== 'Enter') return
-                write(['proxyUrl'], proxyUrl).then(() => setDraft(null))
-              },
-              style: styles.input,
-            }),
+            { className: 'sb-field' },
             h(
-              'button',
-              {
-                type: 'button',
-                disabled: !writable || busy,
-                onClick: () => write(['proxyUrl'], proxyUrl).then(() => setDraft(null)),
-                style: styles.button,
-              },
-              justSaved ? t('applied') : t('apply'),
+              'div',
+              { className: 'sb-inline' },
+              h('span', { className: 'sb-label' }, t('proxyLabel')),
+              healthLabel === null
+                ? null
+                : h(
+                    'span',
+                    {
+                      className:
+                        health.health !== null &&
+                        health.health !== undefined &&
+                        health.health.ok
+                          ? 'sb-hint sb-ok'
+                          : 'sb-hint sb-bad',
+                    },
+                    healthLabel,
+                  ),
             ),
-            health === null
+            h(
+              'div',
+              { className: 'sb-inline' },
+              h('input', {
+                type: 'text',
+                className: 'sb-input',
+                value: proxyUrl,
+                placeholder: t('proxyPlaceholder'),
+                spellCheck: false,
+                disabled: !writable || busy,
+                onChange: (event) => setDraft(event.target.value),
+                onKeyDown: (event) => {
+                  if (event.key === 'Enter') commitProxy()
+                },
+              }),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'sb-button',
+                  disabled: !writable || busy,
+                  onClick: commitProxy,
+                },
+                justSaved ? t('applied') : t('apply'),
+              ),
+            ),
+            h(
+              'div',
+              { className: 'sb-inline' },
+              h('span', { className: 'sb-label' }, t('modeLabel')),
+              h(
+                'select',
+                {
+                  className: 'sb-select',
+                  value: proxyMode,
+                  disabled: !writable || busy,
+                  onChange: (event) => write(['proxyMode'], event.target.value),
+                },
+                h('option', { value: 'auto' }, t('modeAuto')),
+                h('option', { value: 'always' }, t('modeAlways')),
+                h('option', { value: 'never' }, t('modeNever')),
+              ),
+            ),
+            h('p', { className: 'sb-hint' }, t('proxyHint')),
+            statusError === null
               ? null
               : h(
-                  'span',
-                  { style: health.health !== null && health.health !== undefined && health.health.ok ? styles.ok : styles.bad },
-                  health.error !== null && health.error !== undefined
-                    ? health.error
-                    : health.health === null || health.health === undefined
-                      ? ''
-                      : health.health.ok
-                        ? `${t('reachable')} ${health.health.ms}ms`
-                        : t('unreachable'),
+                  'p',
+                  { className: 'sb-hint sb-bad' },
+                  `${t('unavailable')}：${statusError}`,
+                  ' ',
+                  t('credentialHint'),
                 ),
           ),
-          h(
-            'div',
-            { style: styles.row },
-            h('span', { style: styles.hint }, t('modeLabel')),
-            h(
-              'select',
-              {
-                value: proxyMode,
-                disabled: !writable || busy,
-                onChange: (event) => write(['proxyMode'], event.target.value),
-                style: styles.select,
-              },
-              h('option', { value: 'auto' }, t('modeAuto')),
-              h('option', { value: 'always' }, t('modeAlways')),
-              h('option', { value: 'never' }, t('modeNever')),
-            ),
-          ),
-          h('div', { style: styles.hint }, t('proxyHint')),
-          statusError === null
-            ? null
-            : h(
-                'div',
-                { style: styles.bad },
-                `${t('unavailable')}：${statusError}`,
-                ' ',
-                h('span', { style: styles.hint }, t('credentialHint')),
-              ),
         ),
 
         // Result budget.
         h(
-          'div',
-          { style: styles.section },
-          h('div', { style: styles.heading }, t('limitsTitle')),
+          'section',
+          { className: 'sb-section' },
+          h('h3', { className: 'sb-title' }, t('resultsTitle')),
           h(
             'div',
-            { style: styles.row },
-            h('span', { style: styles.hint }, t('resultsLabel')),
+            { className: 'sb-field' },
             h(
-              'select',
-              {
-                value: maxResults,
-                disabled: !writable || busy,
-                onChange: (event) => write(['maxResults'], Number(event.target.value)),
-                style: styles.select,
-              },
-              ...LIMITS.map((limit) => h('option', { key: limit, value: String(limit) }, String(limit))),
+              'div',
+              { className: 'sb-inline' },
+              h('span', { className: 'sb-label' }, t('resultsLabel')),
+              h(
+                'select',
+                {
+                  className: 'sb-select',
+                  value: maxResults,
+                  disabled: !writable || busy,
+                  onChange: (event) => write(['maxResults'], Number(event.target.value)),
+                },
+                ...LIMITS.map((limit) => h('option', { key: limit, value: String(limit) }, String(limit))),
+              ),
             ),
           ),
         ),
 
-        h('div', { style: styles.hint }, t('instantHint')),
+        h('p', { className: 'sb-hint' }, t('instantHint')),
       )
     }
 
     function apply(ctx) {
       const t = ctx.locale.bind(LOCALE_NS)
-      ctx.effect(
-        () => ctx.locale.register(LOCALE_NS, { zh, en }),
-        'search-bird: dictionaries',
-      )
+      ctx.effect(() => ctx.locale.register(LOCALE_NS, { zh, en }), 'search-bird: dictionaries')
 
       const form = ctx.configForms.get(NS)
       const face = {
